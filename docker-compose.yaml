@@ -1,0 +1,41 @@
+version: "3"
+services:
+  react-app:
+    build:
+      dockerfile: Dockerfile
+      context: ./client
+    stdin_open: true
+    ports: 
+      - "3000:3000"
+    networks:
+      - autocomplete-app
+    depends_on:
+        - api-server
+  api-server:
+    build:
+      dockerfile: Dockerfile
+      context: ./server
+    image: api-server
+    ports:
+      - "8080:8080"
+    networks:
+      - autocomplete-app
+    depends_on:
+      - redis 
+  redis:
+    image: redislabs/redismod
+    ports:
+      - 6379:6379
+    networks:
+      - autocomplete-app
+  redisinsight:
+    image: redislabs/redisinsight:latest
+    ports:
+      - '8001:8001'
+    volumes:
+      - ./Users/ajeetraina/data/redisinsight:/db
+    networks:
+      - autocomplete-app 
+networks:
+  autocomplete-app:
+    driver: bridge
